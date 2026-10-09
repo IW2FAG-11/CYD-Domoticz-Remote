@@ -165,6 +165,11 @@ bool HandleDomoticzData(JsonObject RJson2, Device * d)
     int JSonLevel = 0;
 
     if (RJson2["Data"].is<const char*>()) JSondata = RJson2["Data"];
+    if ((d->type  == TYPE_CONSUMPTION) || (d->type  == TYPE_POWER))
+    {
+        JSondata = RJson2["Usage"];
+    }
+
     if (RJson2["Level"].is<int>()) JSonLevel = RJson2["Level"];
 
     if (d->type == TYPE_RAIN)
