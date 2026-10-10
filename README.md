@@ -1,3 +1,13 @@
+<p align="center">
+  <img src="image/IMG_3245.jpg">
+</p>
+
+> **Nota di aggiornamento:** 
+> - Aggiunta la lettura dello stato del widget ALARM direttamente.
+> - Modificato il valore visualizzato nei device di tipo power.
+
+
+
 Small project to control your home-automation using Domoticz and a CYD (Cheap touchscreen).
 
 There is a video here https://www.youtube.com/watch?v=1Lc6MlZjePM
