@@ -24,6 +24,14 @@ static lv_obj_t* user_label = NULL;
 #define TOTAL_OFFSET_X 10
 #define TOTAL_OFFSET_Y 10
 
+// Alert sensor (Domoticz "Alert" subtype): minimum level considered as "alarmed".
+// The warning icon turns red at/above this level, and green below.
+// Domoticz alert levels: 0=gray, 1=green, 2=yellow, 3=orange, 4=red.
+// Overridable with -DALERT_ALARM_LEVEL=x in platformio.ini build_flags.
+#ifndef ALERT_ALARM_LEVEL
+    #define ALERT_ALARM_LEVEL 2
+#endif
+
 //Icon size
 //int Size_icon = 35;
 
@@ -110,8 +118,37 @@ static void Widget_button(lv_obj_t* panel, char* desc, int x, int y, int w, int 
     //lv_obj_set_size(img, Size_icon, Size_icon);
     lv_obj_set_style_img_recolor_opa(img, 50, 0);
 
+    // Alert sensor (Domoticz "Alert" subtype): display the state and color the
+    // icon according to the alert level (green = not alarmed, red = alarmed)
+    if (d->type == TYPE_WARNING)
+    {
+        lv_color_t alert_color;
+        if (d->level >= ALERT_ALARM_LEVEL)
+        {
+            alert_color = LV_COLOR_MAKE(0xFF, 0x00, 0x00);  // Red  : alarmed
+        }
+        else
+        {
+            alert_color = LV_COLOR_MAKE(0x00, 0xFF, 0x00);  // Green: not alarmed
+        }
+        lv_obj_set_style_img_recolor(img, alert_color, 0);
+        lv_obj_set_style_img_recolor_opa(img, 255, 0);  // Full opacity for a clear color
+
+        // Display the alert state (Domoticz svalue: "0"/"1", "Rete Presente"/...)
+        if (d->data && strlen(d->data) > 0)
+        {
+            lv_obj_t * label = lv_label_create(Button_icon);
+            lv_obj_set_style_text_color(label, alert_color, 0);
+            lv_obj_set_style_text_font(label, &small_font, 0);
+            lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_CENTER, 0);
+            lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
+            lv_obj_set_width(label, w);
+            lv_label_set_text(label, d->data);
+            lv_obj_align_to(label, img, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+        }
+    }
     // Display a "on" icon
-    if (d->type < TYPE_SWITCH)
+    else if (d->type < TYPE_SWITCH)
     {   
         if (d->data && (strcmp(d->data, "On") == 0 || strcmp(d->data, "Open") == 0))
         {
