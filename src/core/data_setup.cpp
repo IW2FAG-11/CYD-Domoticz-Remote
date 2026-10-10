@@ -291,8 +291,20 @@ void Update_device_data(JsonObject RJson2)
         // If important Warning
         if (myDevices[ID].type == TYPE_WARNING)
         {
-            // Force popup
-            Select_deviceMemorised((void *)&myDevices[ID]);
+            #ifdef ALERT_POPUP
+                // Force popup (open the device detail page on alert)
+                Select_deviceMemorised((void *)&myDevices[ID]);
+            #else
+                // Update the widget grid (and the detail page) live, without popup
+                if ((GetActivePanel() == DEVICE_PANEL) && (GetSelectedDeviceIdx() == JSonidx))
+                {
+                    RefreshDevicePanel();
+                }
+                else
+                {
+                    RefreshWidgetsPanel(true);
+                }
+            #endif
         }
         else
         {
